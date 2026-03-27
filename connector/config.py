@@ -7,7 +7,8 @@ API_KEY    = os.getenv("EIA_API_KEY", "")
 BASE_URL   = "https://api.eia.gov/v2/nuclear-outages" 
 PAGE_SIZE = 5000 # Number of records to fetch per API request (max allowed by EIA is 5000)
 MAX_RETRIES = 3 # Maximum number of retries for API requests in case of failures
-DATA_DIR   = "data" # Ensure the data directory exists
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(BASE_DIR, "data", "raw")
 
 # ── Date range ───────────────────────────────────────
 START_YEAR  = 2015  
