@@ -25,11 +25,11 @@ def clean_facility_outages(facility_df: pd.DataFrame) -> pd.DataFrame:
     """Rename columns to snake_case and drop redundant unit columns"""
     df = facility_df.rename(columns={
         "facility":      "facility_id",
-        "facilityName":  "facility_name",
         "percentOutage": "percent_outage",
     })
 
     df = df.drop(columns=[col for col in UNIT_COLS if col in df.columns])
+    df = df.drop(columns=["facilityName"], errors="ignore")
     df = df.sort_values(["period", "facility_id"], ascending=[False, True])
     df = df.reset_index(drop=True)
 
@@ -41,12 +41,12 @@ def clean_generator_outages(generator_df: pd.DataFrame) -> pd.DataFrame:
     """Rename columns to snake_case and drop redundant unit columns"""
     df = generator_df.rename(columns={
         "facility":      "facility_id",
-        "facilityName":  "facility_name",
         "generator":     "generator_id",
         "percentOutage": "percent_outage",
     })
 
     df = df.drop(columns=[col for col in UNIT_COLS if col in df.columns])
+    df = df.drop(columns=["facilityName"], errors="ignore")
     df = df.sort_values(
         ["period", "facility_id", "generator_id"],
         ascending=[False, True, True]
