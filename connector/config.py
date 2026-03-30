@@ -10,6 +10,13 @@ MAX_RETRIES = 3 # Maximum number of retries for API requests in case of failures
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data", "raw")
 
+METADATA_FILE = os.path.join(BASE_DIR, "data", "metadata.json")
+
+MERGE_KEYS = {
+    "facility":  ["period", "facility"],
+    "generator": ["period", "facility", "generator"],
+}
+
 # ── Date range ───────────────────────────────────────
 START_YEAR  = 2015  
 END_YEAR    = 2026
