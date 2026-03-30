@@ -367,7 +367,7 @@ One row per plant per day — capacity, outage in MW, and percentage offline.
 }
 ```
 
-![alt text](/images/image.png)
+![alt text](/screenshots//image.png)
 
 ---
 
@@ -387,7 +387,7 @@ Same metrics as facility outages but broken down by individual generator unit.
 }
 ```
 
-![alt text](/images/image-1.png)
+![alt text](/screenshots/image-1.png)
 
 ---
 
@@ -395,7 +395,7 @@ Same metrics as facility outages but broken down by individual generator unit.
 
 Reference table — one row per plant with its ID and name (62 total).
 
-![alt text](/images/image-2.png)
+![alt text](/screenshots/image-2.png)
 
 ---
 
@@ -415,7 +415,7 @@ Historical KPI per plant: average capacity factor, average and max outage %, tot
 }
 ```
 
-![alt text](/images/image-3.png)
+![alt text](/screenshots/image-3.png)
 
 ---
 
@@ -435,7 +435,7 @@ Aggregated by calendar month across all years — identifies which months concen
 }
 ```
 
-![alt text](/images/image-4.png)
+![alt text](/screenshots/image-4.png)
 
 ---
 
@@ -455,7 +455,7 @@ Daily US-wide totals: combined capacity, total MW offline, percentage offline, a
 }
 ```
 
-![alt text](/images/image-5.png)
+![alt text](/screenshots/image-5.png)
 
 ---
 
