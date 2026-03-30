@@ -22,29 +22,17 @@ The pipeline follows a simple layered architecture:
 ```mermaid
 flowchart TD
 
-A[EIA Open Data API]
-    -->|paginated requests| 
-B[Connector]
+A[EIA Open Data API] -->|paginated requests| B[Connector]
 
-B 
-    -->|facility & generator outages| 
-C[(Raw Parquet Files)]
+B[Connector] -->|facility & generator outages| C[(Raw Parquet Files)]
 
-C 
-    -->|load datasets| 
-D[Data Model]
+C[(Raw Parquet Files)] -->|load datasets| D[Data Model]
 
-D 
-    -->|cleaned tables + KPIs| 
-E[(Processed Parquet)]
+D[Data Model] -->|cleaned tables + KPIs| E[(Processed Parquet)]
 
-E 
-    -->|filtered queries| 
-F[FastAPI API]
+E[(Processed Parquet)] -->|filtered queries| F[FastAPI API]
 
-F 
-    -->|REST endpoints| 
-G[React Frontend]
+F[FastAPI API] -->|REST endpoints| G[React Frontend]
 ```
 
 ---
