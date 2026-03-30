@@ -12,6 +12,9 @@ OUTPUT_FILES = {
     "facilities":        "facilities.parquet",
     "facility_outages":  "facility_outages_clean.parquet",
     "generator_outages": "generator_outages_clean.parquet",
+    "facility_summary":  "facility_summary.parquet",    
+    "seasonality":       "seasonality.parquet",         
+    "us_total":          "us_total.parquet",            
 }
 
 

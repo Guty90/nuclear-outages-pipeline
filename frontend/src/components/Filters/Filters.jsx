@@ -15,6 +15,9 @@ export default function Filters({ filters, facilities, onChange }) {
           <option value="facility">Facility Outages</option>
           <option value="generator">Generator Outages</option>
           <option value="facilities">Facilities</option>
+          <option value="summary">Plant Performance</option>      
+          <option value="seasonality">Monthly Patterns</option>       
+          <option value="us_total">System Overview</option>             
         </select>
       </div>
 
@@ -26,7 +29,7 @@ export default function Filters({ filters, facilities, onChange }) {
         <select
           value={filters.facilityId}
           onChange={e => onChange("facilityId", e.target.value)}
-          disabled={filters.dataType === "facilities"}
+          disabled={["facilities", "summary", "seasonality", "us_total"].includes(filters.dataType)}
           className="bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2 focus:outline-none focus:border-white transition-colors disabled:opacity-40"
         >
           <option value="">All facilities</option>
@@ -47,7 +50,7 @@ export default function Filters({ filters, facilities, onChange }) {
           type="date"
           value={filters.startDate}
           onChange={e => onChange("startDate", e.target.value)}
-          disabled={filters.dataType === "facilities"}
+          disabled={["facilities", "summary", "seasonality"].includes(filters.dataType)}
           className="bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2 focus:outline-none focus:border-white transition-colors disabled:opacity-40"
         />
       </div>
@@ -61,7 +64,7 @@ export default function Filters({ filters, facilities, onChange }) {
           type="date"
           value={filters.endDate}
           onChange={e => onChange("endDate", e.target.value)}
-          disabled={filters.dataType === "facilities"}
+          disabled={["facilities", "summary", "seasonality"].includes(filters.dataType)}
           className="bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2 focus:outline-none focus:border-white transition-colors disabled:opacity-40"
         />
       </div>

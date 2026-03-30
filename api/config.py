@@ -11,6 +11,9 @@ PROCESSED_DIR = os.path.join(BASE_DIR, "data", "processed")
 FACILITIES_FILE = os.path.join(PROCESSED_DIR, "facilities.parquet")
 FACILITY_FILE  = os.path.join(PROCESSED_DIR, "facility_outages_clean.parquet")
 GENERATOR_FILE = os.path.join(PROCESSED_DIR, "generator_outages_clean.parquet")
+SUMMARY_FILE    = os.path.join(PROCESSED_DIR, "facility_summary.parquet")    
+SEASONALITY_FILE = os.path.join(PROCESSED_DIR, "seasonality.parquet")        
+US_TOTAL_FILE   = os.path.join(PROCESSED_DIR, "us_total.parquet")            
 
 
 # Auth

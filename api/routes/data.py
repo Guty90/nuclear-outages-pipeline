@@ -2,8 +2,8 @@ import os
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Security
 from fastapi.security import APIKeyHeader
-from config import FACILITIES_FILE, FACILITY_FILE, GENERATOR_FILE, APP_API_KEY
-from schemas import DataResponse, Facility, FacilityOutage, GeneratorOutage
+from config import FACILITIES_FILE, FACILITY_FILE, GENERATOR_FILE, APP_API_KEY, SUMMARY_FILE, SEASONALITY_FILE, US_TOTAL_FILE
+from schemas import DataResponse, Facility, FacilityOutage, GeneratorOutage, FacilitySummary, Seasonality, UsTotal
 
 router = APIRouter()
 
@@ -25,6 +25,12 @@ def load_data_by_type(data_type: str) -> pd.DataFrame:
         file_path = GENERATOR_FILE
     elif data_type == "facilities":
         file_path = FACILITIES_FILE
+    elif data_type == "summary":        
+        file_path = SUMMARY_FILE
+    elif data_type == "seasonality":    
+        file_path = SEASONALITY_FILE
+    elif data_type == "us_total":       
+        file_path = US_TOTAL_FILE
     else:
         raise HTTPException(
             status_code=400,
@@ -83,6 +89,12 @@ def get_data(
         schema_class = FacilityOutage
     elif type == "generator":
         schema_class = GeneratorOutage
+    elif type == "summary":             
+        schema_class = FacilitySummary
+    elif type == "seasonality":         
+        schema_class = Seasonality
+    elif type == "us_total":            
+        schema_class = UsTotal
     else:  # facilities
         schema_class = Facility
 
