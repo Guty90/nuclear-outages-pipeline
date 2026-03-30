@@ -166,18 +166,20 @@ Create a `.env` file in the root of the project:
 
 ```env
 # EIA API key — get yours at https://www.eia.gov/opendata/
-EIA_API_KEY=your_eia_api_key_here
+EIA_API_KEY=your_eia_api_key
 
 # API key for the FastAPI backend
-APP_API_KEY=your_secret_key_here
+APP_API_KEY=any secret string
 ```
 
 Create a `.env` file inside the `frontend/` folder:
 
 ```env
 VITE_API_URL=http://localhost:8000
-VITE_APP_API_KEY=your_secret_key_here
+VITE_APP_API_KEY=any secret string
 ```
+
+**Note:** `APP_API_KEY` and `VITE_APP_API_KEY` must have the same value.
 
 ---
 
