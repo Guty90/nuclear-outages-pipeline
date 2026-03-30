@@ -49,6 +49,8 @@ nuclear-outages-pipeline/
 │   ├── conftest.py         # Shared fixtures
 │   ├── test_aggregator.py  # Unit tests for KPI calculations
 │   └── test_api.py         # Integration tests for API endpoints
+├── Dockerfile              # API container
+├── docker-compose.yml      # Orchestrates API + Frontend containers
 ├── .env                    # Environment variables (see setup)
 ├── requirements.txt        # Python dependencies
 └── README.md
@@ -120,8 +122,9 @@ Three aggregated datasets computed from facility_outages:
 
 ## Requirements
 
-- Python 3.10+
-- Node.js 18+
+- Python 3.12+
+- Node.js 24+
+- Docker Desktop (optional, for containerized setup)
 - An EIA API key — get one free at [https://www.eia.gov/opendata/](https://www.eia.gov/opendata/)
 
 ---
@@ -135,25 +138,7 @@ git clone https://github.com/Guty90/nuclear-outages-pipeline.git
 cd nuclear-outages-pipeline
 ```
 
-### 2. Create and activate a virtual environment
-
-```bash
-python -m venv venv
-
-# macOS / Linux
-source venv/bin/activate
-
-# Windows
-venv\Scripts\activate
-```
-
-### 3. Install Python dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Configure environment variables
+### 2. Configure environment variables
 
 Create a `.env` file in the root of the project:
 
@@ -165,7 +150,61 @@ EIA_API_KEY=your_eia_api_key_here
 APP_API_KEY=your_secret_key_here
 ```
 
-### 5. Configure the date range (optional)
+Create a `.env` file inside the `frontend/` folder:
+
+```env
+VITE_API_URL=http://localhost:8000
+VITE_APP_API_KEY=your_secret_key_here
+```
+
+---
+
+## Option A — Running with Docker (recommended)
+
+Make sure Docker Desktop is running, then from the root of the project:
+
+```bash
+docker-compose up --build
+```
+
+- API: `http://localhost:8000`
+- Frontend: `http://localhost:5173`
+- Interactive API docs: `http://localhost:8000/docs`
+
+To stop all containers:
+
+```bash
+docker-compose down
+```
+
+> **Note:** The `data/` folder is mounted as a volume, so Parquet files persist between container restarts. If no data exists yet, trigger a full refresh after the containers are up:
+> ```bash
+> curl "http://localhost:8000/refresh" -H "X-API-Key: your_secret_key_here"
+> ```
+
+---
+
+## Option B — Running Manually
+
+### 1. Create and activate a virtual environment
+
+```bash
+python -m venv venv
+
+# macOS / Linux
+source venv/bin/activate
+
+# Windows
+venv\Scripts\activate
+```
+
+### 2. Install Python dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configure the date range (optional)
 
 The connector fetches data from `START_YEAR` to `END_YEAR`. You can change this in `connector/config.py`:
 
@@ -176,11 +215,7 @@ END_YEAR   = 2026
 
 > **Note:** Fetching the full range (2015–2026) takes approximately 5–10 minutes on the first run due to EIA API pagination.
 
----
-
-## Running the Pipeline
-
-### Step 1 — Run the connector
+### 4. Run the connector
 
 Fetches raw data from the EIA API and saves it to `data/raw/`.
 
@@ -194,7 +229,7 @@ Output files:
 
 > On subsequent runs, new records are merged with the existing Parquet files and deduplicated by primary key, so re-running the connector is safe and will never inflate the dataset with duplicate rows.
 
-### Step 2 — Run the data model
+### 5. Run the data model
 
 Cleans, normalizes, and aggregates the raw data. Saves results to `data/processed/`.
 
@@ -210,11 +245,9 @@ Output files:
 - `data/processed/seasonality.parquet`
 - `data/processed/us_total.parquet`
 
-> **Tip:** Steps 1 and 2 can also be triggered via the `/refresh` API endpoint once the backend is running.
+> **Tip:** Steps 4 and 5 can also be triggered via the `/refresh` API endpoint once the backend is running.
 
----
-
-## Running the API
+### 6. Run the API
 
 ```bash
 cd api
@@ -224,6 +257,34 @@ uvicorn main:app --reload
 The API will be available at `http://localhost:8000`.
 
 Interactive docs: `http://localhost:8000/docs`
+
+### 7. Run the Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`.
+
+---
+
+## Running the Tests
+
+```bash
+pip install pytest httpx
+pytest tests/ -v
+```
+
+### Test coverage
+
+- **`test_aggregator.py`** — unit tests for all three KPI calculations (capacity factor, seasonality, US total)
+- **`test_api.py`** — integration tests for auth, pagination, filters and response structure
+
+---
+
+## API Reference
 
 ### Endpoints
 
@@ -261,51 +322,9 @@ All endpoints require an `X-API-Key` header matching the `APP_API_KEY` environme
 
 ---
 
-## Running the Frontend
-
-### 1. Install dependencies
-
-```bash
-cd frontend
-npm install
-```
-
-### 2. Configure environment variables
-
-Create a `.env` file inside the `frontend/` folder:
-
-```env
-VITE_API_URL=http://localhost:8000
-VITE_APP_API_KEY=your_secret_key_here
-```
-
-### 3. Start the dev server
-
-```bash
-npm run dev
-```
-
-The frontend will be available at `http://localhost:5173`.
-
----
-
-## Running the Tests
-
-```bash
-pip install pytest httpx
-pytest tests/ -v
-```
-
-### Test coverage
-
-- **`test_aggregator.py`** — unit tests for all three KPI calculations (capacity factor, seasonality, US total)
-- **`test_api.py`** — integration tests for auth, pagination, filters and response structure
-
----
-
 ## Incremental Extraction
 
-The connector it always fetches the configured date range for the last_extraction_date and deduplicates on merge.
+The connector always fetches from `last_extraction_date` and deduplicates on merge.
 
 `data/metadata.json` tracks global run metadata:
 
@@ -339,11 +358,13 @@ On each run, incoming records are merged with the existing Parquet files and ded
 
 **React + Vite + Tailwind CSS** — Chosen for familiarity and speed of development. Vite is well-suited for projects of this scale, and Tailwind avoids the overhead of managing custom CSS.
 
+**Docker with volume mount for `data/`** — The `data/` directory is mounted as a volume in `docker-compose.yml` so that Parquet files generated by the connector persist across container restarts. Without this, all extracted data would be lost every time the container is rebuilt.
+
+**Plant Performance — Capacity Factor (Renewable Electricity %)** — The Plant Performance analysis was included based on S&P Global Market Intelligence's KPI Guide for the power generation industry (https://www.spglobal.com/market-intelligence/en/news-insights/resources/kpi-guides/power-generation). According to this source, the Capacity Factor —which measures the percentage of renewable electricity actually generated (solar, wind, hydro, and geothermal) relative to the maximum possible capacity— is one of the most critical KPIs in the sector. This indicator enables companies to assess how efficiently a plant operates against its installed potential, making it essential for operational, investment, and maintenance decision-making.
+
+**Monthly Patterns — Identifying Low-Demand Months** — The Monthly Patterns analysis was incorporated based on information published by the U.S. Energy Information Administration (EIA) (https://www.eia.gov/todayinenergy/detail.php?id=23112). According to this source, understanding which months of the year experience lower electricity demand represents a significant strategic advantage for companies in the sector. This knowledge allows them to schedule preventive or corrective maintenance on their generators during low-consumption periods, thereby minimizing the impact on end users and maximizing infrastructure availability during peak demand seasons.
+
 **Known limitation / future improvement** — Currently, every refresh re-reads the existing Parquet file and rewrites it even if there are no new records. A future improvement would be to compare the incoming records against the existing dataset before writing, and skip the write if nothing has changed.
-
-**Plant Performance — Capacity Factor (Renewable Electricity %)** - The Plant Performance analysis was included based on S&P Global Market Intelligence's KPI Guide for the power generation industry (https://www.spglobal.com/market-intelligence/en/news-insights/resources/kpi-guides/power-generation). According to this source, the Capacity Factor —which measures the percentage of renewable electricity actually generated (solar, wind, hydro, and geothermal) relative to the maximum possible capacity— is one of the most critical KPIs in the sector. This indicator enables companies to assess how efficiently a plant operates against its installed potential, making it essential for operational, investment, and maintenance decision-making.
-
-**Monthly Patterns — Identifying Low-Demand Months** - The Monthly Patterns analysis was incorporated based on information published by the U.S. Energy Information Administration (EIA) (https://www.eia.gov/todayinenergy/detail.php?id=23112). According to this source, understanding which months of the year experience lower electricity demand represents a significant strategic advantage for companies in the sector. This knowledge allows them to schedule preventive or corrective maintenance on their generators during low-consumption periods, thereby minimizing the impact on end users and maximizing infrastructure availability during peak demand seasons.
 
 ---
 
@@ -367,7 +388,7 @@ One row per plant per day — capacity, outage in MW, and percentage offline.
 }
 ```
 
-![alt text](/screenshots//image.png)
+![Facility Outages](/screenshots/image.png)
 
 ---
 
@@ -387,7 +408,7 @@ Same metrics as facility outages but broken down by individual generator unit.
 }
 ```
 
-![alt text](/screenshots/image-1.png)
+![Generator Outages](/screenshots/image-1.png)
 
 ---
 
@@ -395,7 +416,7 @@ Same metrics as facility outages but broken down by individual generator unit.
 
 Reference table — one row per plant with its ID and name (62 total).
 
-![alt text](/screenshots/image-2.png)
+![Facilities](/screenshots/image-2.png)
 
 ---
 
@@ -415,7 +436,7 @@ Historical KPI per plant: average capacity factor, average and max outage %, tot
 }
 ```
 
-![alt text](/screenshots/image-3.png)
+![Plant Performance](/screenshots/image-3.png)
 
 ---
 
@@ -435,7 +456,7 @@ Aggregated by calendar month across all years — identifies which months concen
 }
 ```
 
-![alt text](/screenshots/image-4.png)
+![Monthly Patterns](/screenshots/image-4.png)
 
 ---
 
@@ -455,11 +476,11 @@ Daily US-wide totals: combined capacity, total MW offline, percentage offline, a
 }
 ```
 
-![alt text](/screenshots/image-5.png)
+![System Overview](/screenshots/image-5.png)
 
 ---
 
-
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -467,6 +488,7 @@ Daily US-wide totals: combined capacity, total MW offline, percentage offline, a
 | Data storage | Apache Parquet |
 | API | FastAPI, Pydantic, Uvicorn |
 | Frontend | React, Vite, Tailwind CSS, Lucide React, React Icons |
+| Containerization | Docker, Docker Compose |
 | Tests | Pytest, FastAPI TestClient, httpx |
 
 ---
