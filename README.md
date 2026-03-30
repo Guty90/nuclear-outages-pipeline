@@ -181,10 +181,10 @@ docker-compose down
 >
 > If no data exists yet, trigger a full refresh after the containers are up.
 >
-> **Option 1 — Using the frontend (recommended)**  
+> **Option 1 — Using the frontend (recommended):**  
 > Open the frontend and click the **Refresh Data** button to fetch and visualize the data.
 >
-> **Option 2 — Using the API**
+> **Option 2 — Using the API:**
 > ```bash
 > curl "http://localhost:8000/refresh" -H "X-API-Key: your_secret_key_here"
 > ```
