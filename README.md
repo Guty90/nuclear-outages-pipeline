@@ -341,6 +341,10 @@ On each run, incoming records are merged with the existing Parquet files and ded
 
 **Known limitation / future improvement** — Currently, every refresh re-reads the existing Parquet file and rewrites it even if there are no new records. A future improvement would be to compare the incoming records against the existing dataset before writing, and skip the write if nothing has changed.
 
+**Plant Performance — Capacity Factor (Renewable Electricity %)** - The Plant Performance analysis was included based on S&P Global Market Intelligence's KPI Guide for the power generation industry (https://www.spglobal.com/market-intelligence/en/news-insights/resources/kpi-guides/power-generation). According to this source, the Capacity Factor —which measures the percentage of renewable electricity actually generated (solar, wind, hydro, and geothermal) relative to the maximum possible capacity— is one of the most critical KPIs in the sector. This indicator enables companies to assess how efficiently a plant operates against its installed potential, making it essential for operational, investment, and maintenance decision-making.
+
+**Monthly Patterns — Identifying Low-Demand Months** - The Monthly Patterns analysis was incorporated based on information published by the U.S. Energy Information Administration (EIA) (https://www.eia.gov/todayinenergy/detail.php?id=23112). According to this source, understanding which months of the year experience lower electricity demand represents a significant strategic advantage for companies in the sector. This knowledge allows them to schedule preventive or corrective maintenance on their generators during low-consumption periods, thereby minimizing the impact on end users and maximizing infrastructure availability during peak demand seasons.
+
 ---
 
 ## Result Examples
@@ -383,7 +387,7 @@ Same metrics as facility outages but broken down by individual generator unit.
 }
 ```
 
-![Generator Outages](![alt text](image-1.png))
+![alt text](image-1.png)
 
 ---
 
@@ -391,7 +395,7 @@ Same metrics as facility outages but broken down by individual generator unit.
 
 Reference table — one row per plant with its ID and name (62 total).
 
-![Facilities](![alt text](image-2.png))
+![alt text](image-2.png)
 
 ---
 
@@ -411,7 +415,7 @@ Historical KPI per plant: average capacity factor, average and max outage %, tot
 }
 ```
 
-![Plant Performance](![alt text](image-3.png))
+![alt text](image-3.png)
 
 ---
 
@@ -431,7 +435,7 @@ Aggregated by calendar month across all years — identifies which months concen
 }
 ```
 
-![Monthly Patterns](![alt text](image-4.png))
+![alt text](image-4.png)
 
 ---
 
@@ -451,7 +455,7 @@ Daily US-wide totals: combined capacity, total MW offline, percentage offline, a
 }
 ```
 
-![System Overview](![alt text](image-5.png))
+![alt text](image-5.png)
 
 ---
 
