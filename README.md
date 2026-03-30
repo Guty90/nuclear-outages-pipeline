@@ -15,7 +15,7 @@ This project is divided into 4 parts:
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 The pipeline follows a simple layered architecture:
 
