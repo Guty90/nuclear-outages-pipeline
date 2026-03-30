@@ -363,7 +363,7 @@ One row per plant per day — capacity, outage in MW, and percentage offline.
 }
 ```
 
-![Facility Outages](![alt text](image.png))
+![alt text](image.png)
 
 ---
 
