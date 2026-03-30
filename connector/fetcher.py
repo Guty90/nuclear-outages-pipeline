@@ -1,19 +1,32 @@
 import time
 import logging
 import requests
+from datetime import date
 from config import API_KEY, BASE_URL, PAGE_SIZE, MAX_RETRIES, DATASETS, START_YEAR, END_YEAR
+from storage import read_metadata
 
 logger = logging.getLogger(__name__)
 
 
-def get_year_ranges() -> list:
-    """Generate list of (start, end) date pairs, one per year"""
-    pairs = []
-    for year in range(START_YEAR, END_YEAR + 1):
-        start = f"{year}-01-01"
-        end   = f"{year}-12-31"
-        pairs.append((start, end))
-    return pairs
+def get_year_ranges(dataset: str) -> list[tuple]:
+    """
+    Generate date ranges to fetch.
+    If metadata exists → only fetch from last date to today.
+    If not → fetch full history from START_YEAR.
+    """
+    metadata = read_metadata()
+
+    if metadata:
+        last_date = metadata["last_extraction_date"]
+        today     = date.today().strftime("%Y-%m-%d")
+        logger.info(f"[{dataset}] Incremental mode: {last_date} → {today}")
+        return [(last_date, today)]
+    else:
+        logger.info(f"[{dataset}] Full mode: {START_YEAR} → {END_YEAR}")
+        pairs = []
+        for year in range(START_YEAR, END_YEAR + 1):
+            pairs.append((f"{year}-01-01", f"{year}-12-31"))
+        return pairs
 
 
 def fetch_year(dataset: str, start: str, end: str, retries: int = 0) -> list[dict]:
@@ -83,18 +96,16 @@ def fetch_year(dataset: str, start: str, end: str, retries: int = 0) -> list[dic
 
 
 def fetch_all_pages(dataset: str) -> list[dict]:
-    """Fetch all data year by year"""
-    year_ranges = get_year_ranges()
+    """Fetch all data using incremental or full mode"""
+    year_ranges = get_year_ranges(dataset)
     all_records = []
-
-    logger.info(f"[{dataset}] Extracting {len(year_ranges)} years...")
 
     for start, end in year_ranges:
         records = fetch_year(dataset, start, end)
         all_records.extend(records)
         logger.info(
-            f"[{dataset}] {start[:4]}: +{len(records)} records "
-            f"(total: {len(all_records)})"
+            f"[{dataset}] {start} → {end}: "
+            f"+{len(records)} records (total: {len(all_records)})"
         )
         time.sleep(0.5)
 
