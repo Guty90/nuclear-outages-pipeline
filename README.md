@@ -20,19 +20,31 @@ This project is divided into 4 parts:
 The pipeline follows a simple layered architecture:
 
 ```mermaid
-flowchart LR
+flowchart TD
 
-A[EIA Open Data API] -- JSON responses --> B[Connector]
+A[EIA Open Data API]
+    -->|paginated requests| 
+B[Connector]
 
-B -- Raw datasets --> C[(Raw Parquet)]
+B 
+    -->|facility & generator outages| 
+C[(Raw Parquet Files)]
 
-C -- Load raw data --> D[Data Model]
+C 
+    -->|load datasets| 
+D[Data Model]
 
-D -- Clean + Aggregated datasets --> E[(Processed Parquet)]
+D 
+    -->|cleaned tables + KPIs| 
+E[(Processed Parquet)]
 
-E -- Query processed datasets --> F[FastAPI API]
+E 
+    -->|filtered queries| 
+F[FastAPI API]
 
-F -- REST responses (JSON) --> G[React Frontend]
+F 
+    -->|REST endpoints| 
+G[React Frontend]
 ```
 
 ---
