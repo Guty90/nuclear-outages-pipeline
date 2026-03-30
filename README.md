@@ -22,15 +22,17 @@ The pipeline follows a simple layered architecture:
 ```mermaid
 flowchart LR
 
-A[EIA API] --> B[Connector]
-B --> C[Raw Parquet]
+A[EIA Open Data API] -- JSON responses --> B[Connector]
 
-C --> D[Data Model]
-D --> E[Processed Parquet]
+B -- Raw datasets --> C[(Raw Parquet)]
 
-E --> F[FastAPI API]
+C -- Load raw data --> D[Data Model]
 
-F --> G[React Frontend]
+D -- Clean + Aggregated datasets --> E[(Processed Parquet)]
+
+E -- Query processed datasets --> F[FastAPI API]
+
+F -- REST responses (JSON) --> G[React Frontend]
 ```
 
 ---
