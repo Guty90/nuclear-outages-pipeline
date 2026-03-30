@@ -15,39 +15,23 @@ This project is divided into 4 parts:
 
 ---
 
-# Architecture
+## 🏗 Architecture
 
 The pipeline follows a simple layered architecture:
 
+```mermaid
+flowchart LR
 
-EIA API
-│
-▼
-Connector
-│
-▼
-Raw Data (Parquet)
-│
-▼
-Data Model
-│
-▼
-Processed Data (Parquet)
-│
-▼
-FastAPI API
-│
-▼
-React Frontend
+A[EIA API] --> B[Connector]
+B --> C[Raw Parquet]
 
+C --> D[Data Model]
+D --> E[Processed Parquet]
 
-**Flow**
+E --> F[FastAPI API]
 
-1. The **connector** fetches nuclear outage data from the EIA API.
-2. Raw datasets are stored in **Parquet format**.
-3. The **data model** transforms and aggregates the data.
-4. The **API** exposes the processed datasets.
-5. The **frontend** allows interactive exploration.
+F --> G[React Frontend]
+```
 
 ---
 
