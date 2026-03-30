@@ -131,7 +131,7 @@ Three aggregated datasets computed from facility_outages:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/nuclear-outages-pipeline.git
+git clone https://github.com/Guty90/nuclear-outages-pipeline.git
 cd nuclear-outages-pipeline
 ```
 
