@@ -177,11 +177,16 @@ To stop all containers:
 docker-compose down
 ```
 
-> **Note:** The `data/` folder is mounted as a volume, so Parquet files persist between container restarts. If no data exists yet, trigger a full refresh after the containers are up:
-> ```bash
-> curl "http://localhost:8000/refresh" -H "X-API-Key: your_secret_key_here"
-> ```
+> **Note:** The `data/` folder is mounted as a volume, so Parquet files persist between container restarts.
 
+If no data exists yet, trigger a full refresh after the containers are up.
+
+**Option 1 — Using the frontend (recommended)**  
+Open the frontend and click the **Refresh** button to fetch and visualize the latest data.
+
+**Option 2 — Using the API**
+```bash
+curl "http://localhost:8000/refresh" -H "X-API-Key: your_secret_key_here"
 ---
 
 ## Option B — Running Manually
